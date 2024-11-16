@@ -17,7 +17,7 @@ app = Flask(__name__)
 def home():
     return "Flask App Running!"
 
-@app.route("/api/playerinfo/<id>", methods=["GET"])
+@app.route("/api/data/playerinfo/<id>", methods=["GET"])
 def playerinfo(id):
     conn = connectDB()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -38,4 +38,26 @@ def playerinfo(id):
     finally:
         cursor.close()
         conn.close()
+
+@app.route("/api/data/playerinfo/<first_name>-<last_name>", methods=["GET"])
+def playerInfo_byName(first_name, last_name):
+    first_name = first_name.capitalize()
+    last_name = last_name.capitalize()
+    conn = connectDB()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
     
+    try:
+        cursor.execute("SELECT * FROM main WHERE first_name = %s and last_name = %s", (first_name, last_name))
+        row = cursor.fetchall()
+        
+        if row is None:
+            return jsonify({"error": "Row not found"}), 404
+
+        return jsonify(row), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    finally:
+        cursor.close()
+        conn.close()
