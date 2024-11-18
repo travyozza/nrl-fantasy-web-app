@@ -41,13 +41,13 @@ def playerinfo(id):
 
 @app.route("/api/data/playerinfo/<first_name>-<last_name>", methods=["GET"])
 def playerInfo_byName(first_name, last_name):
-    first_name = first_name.capitalize()
-    last_name = last_name.capitalize()
+    #first_name = first_name.capitalize()
+    #last_name = last_name.capitalize()
     conn = connectDB()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     try:
-        cursor.execute("SELECT * FROM main WHERE first_name = %s and last_name = %s", (first_name, last_name))
+        cursor.execute("SELECT * FROM main WHERE first_name ILIKE %s and last_name ILIKE %s", (first_name, last_name))
         row = cursor.fetchall()
         
         if row is None:
